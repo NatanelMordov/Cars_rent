@@ -10,8 +10,8 @@ interface CarCardProps{
 }
 
 function CarCard({car}:CarCardProps) {
-  const {city_mpg, year, make, model, transmission, drive }= car;
-  const carRent = calculateCarRent(city_mpg, year)
+  const {City_Mpg, year, make, model, transmission, drive }= car;
+  const carRent = calculateCarRent(City_Mpg, year)
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -46,11 +46,11 @@ function CarCard({car}:CarCardProps) {
           </div>
           <div className="car-card__icon">
             <Image src="/tire.svg" width={20} height={20} alt="seat" />
-            <p className="car-card__icon-text">{drive.toUpperCase()}</p>
+            <p className="car-card__icon-text">{drive ? drive.toUpperCase() : 'N/A'}</p>
           </div>
           <div className="car-card__icon">
             <Image src="/gas.svg" width={20} height={20} alt="seat" />
-            <p className="car-card__icon-text">{city_mpg} MPG</p>
+            <p className="car-card__icon-text">{City_Mpg} MPG</p>
           </div>
         </div>
 

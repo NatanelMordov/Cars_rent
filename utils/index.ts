@@ -1,19 +1,37 @@
 import { CarProps,FilterProps } from "@/types";
 
 export async function fetchCars(filters: FilterProps) {
-    const {manufactur, year, model, limit, fuel }= filters;
+const {manufactur, year, model, limit, fuel }= filters;
 
-    const headers ={
-        'X-RapidAPI-Key':'943aeee785msh193815ef9f7b5ecp1a0267jsna031b8aae6f5',
-		'X-RapidAPI-Host': 'cars-by-api-ninjas.p.rapidapi.com'
+   
+try {
+    const url = new URL("http://localhost:5000/cars");
+
+    // Add parameters to URL if exists
+    if (manufactur) url.searchParams.append("manufactur", manufactur);
+    if (year) url.searchParams.append("year", year.toString());
+    if (model) url.searchParams.append("model", model);
+    if (limit) url.searchParams.append("limit", limit.toString());
+    if (fuel) url.searchParams.append("fuel", fuel);
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Error fetching cars");
     }
-    const response = await fetch(`https://cars-by-api-ninjas.p.rapidapi.com/v1/cars?make=${manufactur}&year=${year}&model=${model}&limit=${limit}&fuel_type=${fuel}`,
-    {headers: headers});
+																																																							
+						
 
     const result = await response.json();
     return result;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error fetching cars");
+  }
     
 }
+
+// פונקציה לחישוב עלות השכרה
 export const calculateCarRent = (city_mpg: number, year: number) => {
     const basePricePerDay = 210; // Base rental price per day in dollars
     const mileageFactor = 0.2; // Additional rate per mile driven
@@ -28,6 +46,8 @@ export const calculateCarRent = (city_mpg: number, year: number) => {
   
     return rentalRatePerDay.toFixed(0);
 };
+
+
 export const generateCarImageUrl = (car: CarProps, angel?: string ) =>{
     const url = new URL("https://cdn.imagin.studio/getimage");
     const { make, model, year } = car;
@@ -40,6 +60,8 @@ export const generateCarImageUrl = (car: CarProps, angel?: string ) =>{
     url.searchParams.append('angel', `${angel}`);
     return `${url}`;
 }
+
+
 export const updateSearchParams = (type: string, value: string) => {
     // Get the current URL search params
     const searchParams = new URLSearchParams(window.location.search);
