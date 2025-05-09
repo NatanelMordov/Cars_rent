@@ -1,90 +1,108 @@
 "use client";
 import { useState, Fragment } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
-import { SearchManufacturProps } from '@/types';
-import { manufacturers } from '@/constants';
 import Image from 'next/image';
 
-function SearchManufactur({manufactur, setManufactur}: SearchManufacturProps) {
+interface SearchManufacturProps {
+  manufactur: string;
+  setManufactur: (manufactur: string) => void;
+  manufacturers: string[];
+}
 
+function SearchManufactur({ manufactur, setManufactur, manufacturers }: SearchManufacturProps) {
   const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const filteredManufacturers =
-    query === ""
+    query === ''
       ? manufacturers
       : manufacturers.filter((item) =>
-          item
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, ""))
+          item.toLowerCase().replace(/\s+/g, '').includes(query.toLowerCase().replace(/\s+/g, ''))
         );
 
-    return (
+  return (
     <div className='search-manufacturer'>
-      <Combobox value={manufactur} onChange={setManufactur}>
+      <Combobox
+        value={manufactur}
+        onChange={(value) => {
+          setManufactur(value);
+          setIsOpen(false);
+        }}
+      >
         <div className='relative w-full'>
-          <Combobox.Button className='absolute top-[14px]'>
+          <Combobox.Button
+            className='absolute top-[14px]'
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
             <Image
-            src="/car-logo.svg"
-            width={20}
-            height={20}
-            className='ml-4'
-            alt='car logo'
+              src='/car-logo.svg'
+              width={20}
+              height={20}
+              className='ml-4'
+              alt='car logo'
             />
           </Combobox.Button>
-          <Combobox.Input 
-          className='search-manufacturer__input'
-          placeholder='Mercedes'
-          displayValue={(manufactur:string)=>manufactur}
-          onChange={(e)=> setQuery(e.target.value)}
+          <Combobox.Input
+            className='search-manufacturer__input'
+            placeholder='Mercedes'
+            displayValue={(manufactur: string) => manufactur}
+            onChange={(e) => setQuery(e.target.value)}
+            onClick={() => setIsOpen(true)}
           />
-
           <Transition
             as={Fragment}
+            show={isOpen}
             leave='transition ease-in duration-100'
             leaveFrom='opacity-100'
             leaveTo='opacity-0'
-            afterLeave={()=>setQuery("")}
+            afterLeave={() => {
+              setQuery('');
+              setIsOpen(false);
+            }}
           >
-            <Combobox.Options
-            className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'
-            >
-            {filteredManufacturers.length === 0 && query !== "" ? (
-                <Combobox.Option
-                  value={query}
-                  className='search-manufacturer__option'
-                >
+            <Combobox.Options className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+              {filteredManufacturers.length === 0 && query !== '' ? (
+                <Combobox.Option value={query} className='search-manufacturer__option'>
                   Create "{query}"
-            </Combobox.Option>
-            ):(
-              filteredManufacturers.map((item) => (
-                <Combobox.Option
-                  key={item}
-                  className={({ active }) =>
-                    `relative search-manufacturer__option 
-                    ${active ? "bg-black text-white" : "text-gray-900"}`
-                  }
-                  value={item}
-                >{({ selected, active }) => (
-                  <>
-                    <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
-                      {item}
-                    </span>
-                    {selected ? (
-                      <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active? "text-white": "text-pribg-primary-purple"}`}
-                      ></span>
-                    ) : null}
-                  </>
-                )}
                 </Combobox.Option>
-              )
-            ))}
+              ) : (
+                filteredManufacturers.map((item) => (
+                  <Combobox.Option
+                    key={item}
+                    className={({ active }) =>
+                      `relative search-manufacturer__option ${
+                        active ? 'bg-black text-white' : 'text-gray-900'
+                      }`
+                    }
+                    value={item}
+                  >
+                    {({ selected, active }) => (
+                      <>
+                        <span
+                          className={`block truncate ${
+                            selected ? 'font-medium' : 'font-normal'
+                          }`}
+                        >
+                          {item}
+                        </span>
+                        {selected && (
+                          <span
+                            className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                              active ? 'text-white' : 'text-pribg-primary-purple'
+                            }`}
+                          ></span>
+                        )}
+                      </>
+                    )}
+                  </Combobox.Option>
+                ))
+              )}
             </Combobox.Options>
           </Transition>
         </div>
       </Combobox>
     </div>
-  )
+  );
 }
 
-export default SearchManufactur
+export default SearchManufactur;
