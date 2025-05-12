@@ -12,6 +12,12 @@ export interface SearchManufacturProps{
     manufactur: string;
     setManufactor:(manufactur: string)=>void;
 }
+
+export interface SearchModelProps{
+    model: string;
+    setModel:(model: string)=>void;
+}
+
 export interface CarProps{
     id: string,
     City_Mpg:number,

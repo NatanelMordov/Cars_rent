@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import "../app/globals.css";
 import '../public/close.svg';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 import router from 'next/router';
 // import axios from 'axios';
 
@@ -118,6 +118,7 @@ const LoginPopup = ({}) => {
             <button
               type='submit'
               className='border-[none] p-[10px] rounded-[4px] text-[whitesmoke] bg-black text-[15px] cursor-pointer hover:bg-[rgb(36,53,85)]'
+              onClick={currState === "Sign Up" ? handleSignUp : handleLogin}
             >
               {currState === "Sign Up" ? "Create account" : "Login"}
             </button>

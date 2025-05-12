@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SearchManufactur from './SearchManufactur';
+import SearchModel from './SearchModel';
 import Image from 'next/image';
 
 const SearchButton = ({ otherClasses }: { otherClasses: string }) => (
@@ -20,6 +21,7 @@ function SearchBar() {
   const [manufactur, setManufactur] = useState('');
   const [model, setModel] = useState('');
   const [manufacturersList, setManufacturersList] = useState<string[]>([]);
+  const [modelsList, setModelsList] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,6 +30,21 @@ function SearchBar() {
       .then((data) => setManufacturersList(data))
       .catch((err) => console.error('Failed to fetch manufacturers:', err));
   }, []);
+
+  useEffect(() => {
+  if (!manufactur){
+    setModel('');
+    return;
+  } 
+
+  fetch(`http://localhost:5000/models?manufacturer=${manufactur}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setModelsList(data);
+      setModel('');
+    })
+    .catch((err) => console.error('Failed to fetch models:', err));
+}, [manufactur]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,24 +84,11 @@ function SearchBar() {
         />
         <SearchButton otherClasses='sm:hidden' />
       </div>
-      <div className='searchbar__item'>
-        <Image
-          src='/model_icon.svg'
-          width={25}
-          height={25}
-          className='absolute w-[20px] h-[20px] ml-4'
-          alt='car icon'
-        />
-        <input
-          type='text'
-          name='model'
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          placeholder='AMG'
-          className='searchbar__input'
-        />
+     {manufactur && ( <div className='searchbar__item'>
+      <SearchModel model={model} setModel={setModel} models={modelsList} />
         <SearchButton otherClasses='sm:hidden' />
       </div>
+      )}
       <SearchButton otherClasses='max-sm:hidden' />
     </form>
   );

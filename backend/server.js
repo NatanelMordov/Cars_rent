@@ -77,18 +77,41 @@ app.get('/manufacturers', (req, res) => {
   });
 });
 
+// models by selected manufacturer
+app.get('/models', (req, res) => {
+  const { manufacturer } = req.query;
 
+  if (!manufacturer) {
+    return res.status(400).send('Manufacturer is required');
+  }
+
+  const query = 'SELECT DISTINCT model FROM cars WHERE manufacturers = ?';
+  db.query(query, [manufacturer], (err, results) => {
+    if (err) {
+      console.error('Error fetching models from DB:', err);
+      return res.status(500).send('Error fetching models');
+    }
+
+    const models = results.map(row => row.model);
+    res.json(models);
+  });
+});
 
 app.get('/cars', (req, res) => {
   console.log('Incoming request to /cars with query:', req.query);
-  const { manufactur } = req.query;
+  const { manufactur, model } = req.query;
 
-  let query = 'SELECT * FROM cars';
+   let query = 'SELECT * FROM cars';
   const params = [];
 
   if (manufactur) {
     query += ' WHERE manufacturers = ?';
     params.push(manufactur);
+  }
+
+  if (model) {
+    query += ' AND model = ?';
+    params.push(model);
   }
 
   db.query(query, params, (err, results) => {
