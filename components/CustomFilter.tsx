@@ -1,33 +1,54 @@
 "use client";
-import {useState, Fragment} from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Listbox, Transition } from '@headlessui/react';
 import { CustomFilterProps } from '@/types';
-import { updateSearchParams } from '@/utils';
+import { updateSearchParams, fetchFuels, fetchYears } from '@/utils';
 
-function CustomFilter({title, options}:CustomFilterProps) {
-  const [selected, setSelected] = useState(options[0]);
-  const router= useRouter();
 
-  const handleUpdateParams = (e:{ title: string, value:string}) =>{
-    const newPathName = updateSearchParams(title, e.value.toLowerCase());
+
+function CustomFilter({ title }: CustomFilterProps) {
+  const [selected, setSelected] = useState('');
+  const [options, setOptions] = useState<string[]>([]);
+  const router = useRouter();
+
+
+  const loadOptions = async () => {
+    if (title === 'fuel') {
+      const fuels = await fetchFuels(); 
+      setOptions(fuels);
+      setSelected('Fuels');
+    } else if (title === 'year') {
+      const years = await fetchYears(); 
+      setOptions(years);
+      setSelected('Year');
+    }
+  };
+
+  useEffect(() => {
+    loadOptions();
+  }, [title]);
+
+  const handleUpdateParams = (value: string) => {
+    const newPathName = updateSearchParams(title, value);
     router.push(newPathName);
-  }
-  
+  };
 
   return (
     <div className='w-fit'>
       <Listbox
         value={selected}
-        onChange={(e)=> {setSelected(e);
-        handleUpdateParams(e);
+        onChange={(value: string) => {
+          setSelected(value);
+          handleUpdateParams(value);
         }}
-
       >
-        <div  className='relative w-fit z-10'>
+        <div className='relative w-fit z-10'>
           <Listbox.Button className='custom-filter__btn'>
-            <span className='block truncate'>{selected.title}</span>
+            <span className='block truncate'>
+              {selected || (title === 'fuel' ? 'Fuels' : 'Year')}
+            </span>
             <Image
               src="/chevron-up-down.svg"
               width={20}
@@ -36,36 +57,33 @@ function CustomFilter({title, options}:CustomFilterProps) {
               alt='scroll'
             />
           </Listbox.Button>
+
           <Transition
             as={Fragment}
             leave='transition ease-in duration-100'
             leaveFrom='opacity-100'
             leaveTo='opacity-0'
           >
-            <Listbox.Options  className='custom-filter__options'>
-             {options.map((option)=>(
-              <Listbox.Option
-              key={option.title}
-              value={option}
-              className={({ active }) =>
-              `relative cursor-default select-none py-2 px-4 ${
-                active ? "bg-black text-white" : "text-gray-900"
-              }`
-            }
-              >
-                {({selected})=>(
-                  <span  className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
-                    {option.title}
-                  </span>
-                )}
-              </Listbox.Option>
-             ))} 
+            <Listbox.Options className='custom-filter__options'>
+              {options.map((option) => (
+                <Listbox.Option
+                  key={option}
+                  value={option}
+                 className={({ active }) => `relative cursor-default select-none py-2 px-4 ${active ? 'bg-black text-white' : 'text-gray-900'}`}
+                >
+                  {({ selected }) => (
+                    <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                      {option}
+                    </span>
+                  )}
+                </Listbox.Option>
+              ))}
             </Listbox.Options>
           </Transition>
         </div>
       </Listbox>
     </div>
-  )
+  );
 }
 
-export default CustomFilter
+export default CustomFilter;
