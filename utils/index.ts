@@ -1,7 +1,7 @@
 import { CarProps,FilterProps } from "@/types";
 
 export async function fetchCars(filters: FilterProps) {
-const {manufactur, year, model, limit, fuel }= filters;
+const {manufactur, year, model, limit, fuel, location }= filters;
 
    
 try {
@@ -13,6 +13,7 @@ try {
     if (model) url.searchParams.append("model", model);
     if (limit) url.searchParams.append("limit", limit.toString());
     if (fuel) url.searchParams.append("fuel", fuel);
+    if (location) url.searchParams.append("location", location);
 
     const response = await fetch(url.toString());
 
@@ -90,6 +91,17 @@ export async function fetchYears() {
   try {
     const response = await fetch('http://localhost:5000/years');
     if (!response.ok) throw new Error('Failed to fetch years');
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function fetchLocations() {
+  try {
+    const response = await fetch('http://localhost:5000/location');
+    if (!response.ok) throw new Error('Failed to fetch location');
     return await response.json();
   } catch (error) {
     console.error(error);

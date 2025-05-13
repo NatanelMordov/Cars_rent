@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Listbox, Transition } from '@headlessui/react';
 import { CustomFilterProps } from '@/types';
-import { updateSearchParams, fetchFuels, fetchYears } from '@/utils';
+import { updateSearchParams, fetchFuels, fetchYears, fetchLocations } from '@/utils';
 
 
 
@@ -13,17 +13,21 @@ function CustomFilter({ title }: CustomFilterProps) {
   const [options, setOptions] = useState<string[]>([]);
   const router = useRouter();
 
-
+ 
   const loadOptions = async () => {
     if (title === 'fuel') {
-      const fuels = await fetchFuels(); 
+      const fuels = await fetchFuels();
       setOptions(fuels);
       setSelected('Fuels');
     } else if (title === 'year') {
-      const years = await fetchYears(); 
+      const years = await fetchYears();
       setOptions(years);
       setSelected('Year');
-    }
+    }else if (title === 'location') {
+    const locations = await fetchLocations();
+    setOptions(locations);
+    setSelected('Location');
+  }
   };
 
   useEffect(() => {
@@ -32,7 +36,7 @@ function CustomFilter({ title }: CustomFilterProps) {
 
   const handleUpdateParams = (value: string) => {
     const newPathName = updateSearchParams(title, value);
-    router.push(newPathName);
+    router.replace(newPathName);
   };
 
   return (
