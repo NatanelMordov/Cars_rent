@@ -47,9 +47,6 @@ app.post('/login', (req, res) => {
 });
 
 
-
-
-
 // sign up
 app.post('/signup', (req, res) => {
   const { name, email, password } = req.body;
@@ -97,11 +94,39 @@ app.get('/models', (req, res) => {
   });
 });
 
+/* to get all values of Fuels from DB*/
+app.get('/fuels', (req, res) => {
+  const query = 'SELECT DISTINCT fuel_type FROM cars';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).send('Error fetching fuel types');
+    const fuels = results.map(row => ({
+      title: row.fuel_type,
+      value: row.fuel_type.toLowerCase()
+    }));
+    res.json(fuels);
+  });
+});
+
+/* to get all values of Years from DB*/
+app.get('/years', (req, res) => {
+  const query = 'SELECT DISTINCT year FROM cars ORDER BY year DESC';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).send('Error fetching years');
+    const years = results.map(row => ({
+      title: row.year.toString(),
+      value: row.year.toString()
+    }));
+    res.json(years);
+  });
+});
+
+
+// cars
 app.get('/cars', (req, res) => {
   console.log('Incoming request to /cars with query:', req.query);
   const { manufactur, model } = req.query;
 
-   let query = 'SELECT * FROM cars';
+  let query = 'SELECT * FROM cars';
   const params = [];
 
   if (manufactur) {

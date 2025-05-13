@@ -3,7 +3,7 @@ import { CarProps,FilterProps } from "@/types";
 export async function fetchCars(filters: FilterProps) {
 const {manufactur, year, model, limit, fuel }= filters;
 
- //   
+   
 try {
     const url = new URL("http://localhost:5000/cars");
 
@@ -74,3 +74,28 @@ export const updateSearchParams = (type: string, value: string) => {
   
     return newPathname;
   };
+
+  export async function fetchFuels() {
+  try {
+    const response = await fetch('http://localhost:5000/fuels');
+    if (!response.ok) throw new Error('Failed to fetch fuels');
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function fetchYears() {
+  try {
+    const response = await fetch('http://localhost:5000/years');
+    if (!response.ok) throw new Error('Failed to fetch years');
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+
+
