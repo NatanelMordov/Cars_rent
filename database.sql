@@ -31,7 +31,7 @@ CREATE TABLE cars (
   id int auto_increment primary key,
   manufacturers VARCHAR(100) NOT NULL,
   model VARCHAR(100) NOT NULL,
-  yearsOfProduction INT  NOT NULL,   /**need to correc type**/
+  yearsOfProduction INT  NOT NULL, 
   fuels VARCHAR(100) NOT NULL,
   gear VARCHAR(100) NOT NULL,
   priceperday INT NOT NULL,
@@ -41,7 +41,8 @@ CREATE TABLE cars (
 
 
 INSERT INTO cars (manufacturers, model, yearsOfProduction, fuels, gear, priceperday, location, inventory)
-VALUES ('Mercedes Benz','G Class', 2025, 'Gas','Automatic', '350$', 'Haifa', 3 ),
+VALUES ('Audi','Q7', 2021, 'Diesel','Automatic', '150$', 'Haifa', 3 ),
+('Mercedes Benz','G Class', 2025, 'Gas','Automatic', '350$', 'Haifa', 3 ),
  ('Mercedes Benz','G Class', 2024, 'Gas','Automatic', '350$', 'Tel Aviv', 1 ),
  ('Mercedes Benz','G Class', 2025, 'Gas','Automatic', '350$', 'TLV Airport', 5 ),
  ('BMW','M 135', 2023, 'Gas','Automatic', '250$', 'Haifa', 2 ),
@@ -51,6 +52,9 @@ VALUES ('Mercedes Benz','G Class', 2025, 'Gas','Automatic', '350$', 'Haifa', 3 )
  ('Mercedes Benz','EQB 300', 2025, 'Electric','Automatic', '350$', 'Haifa', 2 );
 
 
+SELECT DISTINCT fuels FROM cars
+SELECT DISTINCT yearsOfProduction FROM cars
+SELECT * FROM cars WHERE fuels = 'Gas' and yearsOfProduction = 2024
 select * from cars
 
 /*-------------------------------------------------------------------------------------------------*/

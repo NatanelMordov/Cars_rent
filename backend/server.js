@@ -96,47 +96,78 @@ app.get('/models', (req, res) => {
 
 /* to get all values of Fuels from DB*/
 app.get('/fuels', (req, res) => {
-  const query = 'SELECT DISTINCT fuel_type FROM cars';
+  const query = 'SELECT DISTINCT fuels FROM cars';
   db.query(query, (err, results) => {
-    if (err) return res.status(500).send('Error fetching fuel types');
-    const fuels = results.map(row => ({
-      title: row.fuel_type,
-      value: row.fuel_type.toLowerCase()
-    }));
+    if (err){
+      console.error('DB error:', err);
+      return res.status(500).send('Error fetching fuel types');
+    } 
+    const fuels = results.map(row => row.fuels);
     res.json(fuels);
   });
 });
 
 /* to get all values of Years from DB*/
 app.get('/years', (req, res) => {
-  const query = 'SELECT DISTINCT year FROM cars ORDER BY year DESC';
+  const query = 'SELECT DISTINCT yearsOfProduction FROM cars';
   db.query(query, (err, results) => {
     if (err) return res.status(500).send('Error fetching years');
-    const years = results.map(row => ({
-      title: row.year.toString(),
-      value: row.year.toString()
-    }));
+    const years = results.map(row => String(row.yearsOfProduction));
+
     res.json(years);
   });
 });
 
+/* to get all values of Location from DB*/
+app.get('/location', (req, res) => {
+  const query = 'SELECT DISTINCT location FROM cars';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).send('Error fetching years');
+    const location = results.map(row => String(row.location));
 
-// cars
+    res.json(location);
+  });
+});
+
+// get cars
 app.get('/cars', (req, res) => {
   console.log('Incoming request to /cars with query:', req.query);
-  const { manufactur, model } = req.query;
+  const { manufactur, model, fuel, year, location} = req.query;
 
   let query = 'SELECT * FROM cars';
+  const conditions = [];
   const params = [];
 
   if (manufactur) {
-    query += ' WHERE manufacturers = ?';
+    conditions.push('manufacturers = ?');
     params.push(manufactur);
   }
 
   if (model) {
-    query += ' AND model = ?';
+    conditions.push('model = ?');
     params.push(model);
+  }
+
+  if (fuel) {
+    conditions.push('fuels = ?');
+    params.push(fuel);
+  }
+
+  if (year) {
+    conditions.push('yearsOfProduction = ?');
+    params.push(year);
+  }
+
+    if (location) {
+    conditions.push('location = ?');
+    params.push(location);
+  }
+
+  
+
+  // adding the conditions to the query
+  if (conditions.length > 0) {
+    query += ' WHERE ' + conditions.join(' AND ');
   }
 
   db.query(query, params, (err, results) => {
@@ -152,7 +183,6 @@ app.get('/cars', (req, res) => {
     res.json(results);
   });
 });
-
 
 
 // listen to port 5000
