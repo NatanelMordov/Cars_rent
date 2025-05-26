@@ -35,7 +35,7 @@ const LoginPopup = ({}) => {
       sessionStorage.setItem('isAdmin', JSON.stringify(data.isAdmin));
 
       if (data.isAdmin) {
-        router.push('/admin'); // move to admin page
+        router.push('/Admin'); // move to admin page
       } else {
         router.push('/'); // back tho the main page
       }
