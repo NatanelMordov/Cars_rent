@@ -31,8 +31,8 @@ const LoginPopup = ({}) => {
       if (response.ok) {
         const data = await response.json(); // get username and is_admin
 
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('isAdmin', JSON.stringify(data.isAdmin));
+      sessionStorage.setItem('username', data.username);
+      sessionStorage.setItem('isAdmin', JSON.stringify(data.isAdmin));
 
       if (data.isAdmin) {
         router.push('/admin'); // move to admin page
