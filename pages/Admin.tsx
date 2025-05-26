@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../app/globals.css";
 
@@ -16,12 +18,51 @@ const initialCars: Car[] = [
   { id: 2, make: "Honda", model: "Civic", year: 2019, pricePerDay: 165 },
 ];
 
-export default function AdminPanel() {
+export default function AdminPanel() {  
+    
+    // added or changed to support only Admin can view this file
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   const [cars, setCars] = useState(initialCars);
   const [showModal, setShowModal] = useState(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [form, setForm] = useState({ make: "", model: "", year: "", pricePerDay: "" });
 
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const role = JSON.parse(/*localStorage*/sessionStorage.getItem("isAdmin") || "false");
+      console.log("User role from localStorage:", role);
+      if (!role /*!== "true"*/) {
+        alert("Access denied. Admins only.");
+        router.push("/");
+      } else {
+        setIsAuthorized(true);
+      }
+      setIsCheckingAuth(false);
+    }
+  }, []);
+
+
+  
+/*  if (isCheckingAuth) {
+    return <div className="p-4">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
+    */
+////////////////
+
+/*
+  const [cars, setCars] = useState(initialCars);
+  const [showModal, setShowModal] = useState(false);
+  const [editingCar, setEditingCar] = useState<Car | null>(null);
+  const [form, setForm] = useState({ make: "", model: "", year: "", pricePerDay: "" });
+*/
   const resetForm = () => {
     setForm({ make: "", model: "", year: "", pricePerDay: "" });
     setEditingCar(null);
@@ -70,7 +111,19 @@ export default function AdminPanel() {
       setCars(cars.filter((c) => c.id !== id));
     }
   };
+  
+  
+ // added or changed to support only Admin can view this file
+ 
+  if (isCheckingAuth) {
+    return <div className="p-4">Checking permissions...</div>;
+  }
 
+  if (!isAuthorized) {
+    return null;
+  }
+  
+///////////////////////////////
   return (
     <div className="p-4">
     <button
