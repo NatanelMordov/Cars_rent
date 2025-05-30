@@ -2,7 +2,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the server tirmenal:
+
+First, run the server Tirmenal:
 
 ``` 
 • ⁠npm install 
@@ -11,14 +12,15 @@ First, run the server tirmenal:
 • ⁠npm install cors
 • ⁠node server.js
 ```
-Sec, run the development tirmenal:
+
+Then run the development Tirmenal:
+
 ```
 • npm install 
 • ⁠npm install next react react-dom
 • ⁠npx next dev 
 • ⁠npm run dev 
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
@@ -34,53 +36,45 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-### Tasks: 
 
-
+## Tasks:
 **Admin Page (Client Side)**
 
-- When adding or updating a car in the admin page, add the following fields:  
-  fuels, gear, location, inventory
+• When adding or updating a car in the admin page, add the following fields: fuels, gear, location, inventory ** Roger & Lina **
 
-**Admin Page (Server Side)**
+• Connect Admin Page to Server Side ** Roger & Lina **
+--- --- --- 
+**Car Details Page**
 
-- Connect Admin Page to Server Side  
-  Lina and Roger 
+• Remove Id from car details
+• Fix letter casing (uppercase/lowercase)
+• For location – consider adding a map or similar feature using an API
 
---- --- --- ---
+**Natanel & Mytal**
+--- --- --- 
+## Filtering and Sorting
 
-**car Details Page**
+• Filtering is implemented – update the logo to match the filter design
+• Add sorting functionality to the display
 
-- Remove Id from car details
-- Fix letter casing (uppercase/lowercase)
-- For location – consider adding a map or similar feature using an API
+**Natanel & Mytal**
+--- --- --- 
 
---- --- --- ---
+## Order Process
 
-**Filtering and Sorting**
+• Add to Cart and Place Order – Client Side
+• Add to Cart and Place Order – Server Side
+--- --- --- 
 
-- Filtering is implemented – update the logo to match the filter design
-- Add sorting functionality to the display
+## User Profile
 
---- --- --- ---
+• After login, user can access profile and change password
+• User can view their orders and points *(includes some "Nice to Have" features)
 
-**Order Process**
+--- --- --- 
 
-- Add to Cart and Place Order – **Client Side**
-- Add to Cart and Place Order – **Server Side**
+## Points System (Client & Server Side)
 
---- --- --- ---
-
-**User Profile**
-
-- After login, user can access profile and change password
-- User can view their orders and points **(includes some "Nice to Have" features)*
-
---- --- --- ---
-
-**Points System (Client & Server Side)**
-
-- Earn points for each order – **Nice to Have**
-- Allow using points during checkout – **Nice to Have**
-
+• Earn points for each order – Nice to Have
+• Allow using points during checkout – Nice to Have
 
