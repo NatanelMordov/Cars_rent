@@ -15,7 +15,7 @@ try {
     if (fuel) url.searchParams.append("fuel", fuel);
     if (location) url.searchParams.append("location", location);
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), { cache: "no-store" });
 
     if (!response.ok) {
       throw new Error("Error fetching cars");
