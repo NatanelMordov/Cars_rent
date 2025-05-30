@@ -2,23 +2,24 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+
 First, run the server Tirmenal:
-```
+
+``` 
 • ⁠npm install 
 • npm install express
 • ⁠npm install mysql2
 • ⁠npm install cors
 • ⁠node server.js
-
 ```
 
 Then run the development Tirmenal:
+
 ```
 • npm install 
 • ⁠npm install next react react-dom
 • ⁠npx next dev 
 • ⁠npm run dev 
-
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -34,6 +35,7 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
 
 ## Tasks:
 **Admin Page (Client Side)**
@@ -75,3 +77,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 • Earn points for each order – Nice to Have
 • Allow using points during checkout – Nice to Have
+
