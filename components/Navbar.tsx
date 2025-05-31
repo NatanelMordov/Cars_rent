@@ -2,12 +2,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CustomButton } from ".";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginPopup from "@/pages/LoginPopup";
 
 const Navbar = () => {
 
   const [showLogin,setShowLogin]=useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+
+    useEffect(() => {
+    // check if user logged in by sessionStorage
+    const storedUsername = sessionStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   return (
     <>
@@ -23,11 +32,34 @@ const Navbar = () => {
           className='object-contain'
           />
         </Link>
-        <Link
-          href='/LoginPopup'
-          className='text-center text-white rounded-full bg-black min-w-[150px] min-h-[30px] hover:bg-cyan-900 focus-within:shadow-lg'>
-          Sign In
-        </Link>
+         {username ? (
+          <div className="flex items-center gap-4">
+            <button
+              className="text-black font-medium border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100 transition"
+            >
+              Hi, {username}
+            </button>
+
+            <Link href="/cart">
+              <button className="p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition">
+                <Image
+                  src="/cart.svg"
+                  alt="Cart"
+                  width={24}
+                  height={24}
+                  className="object-contain"
+                />
+              </button>
+            </Link>
+          </div>
+        ) : (
+           <Link
+            href="/LoginPopup"
+            className='text-center text-white rounded-full bg-black min-w-[150px] min-h-[30px] flex items-center justify-center hover:bg-cyan-900 focus-within:shadow-lg'
+          >
+            Sign In
+          </Link>
+        )}
       </nav>
     </header>
     </>
