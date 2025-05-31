@@ -11,7 +11,6 @@ const Footer = () => {
             <Image src="/logo (1).svg" alt="logo" width={130} height={20} className="object-contain" />
               <p className='text-base text-gray-700'>
                    M&N Cars <br />
-                   Natanel Mordov &copy;2024
               </p>
           </div>
           <div className="footer__links">
