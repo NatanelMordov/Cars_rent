@@ -221,3 +221,60 @@ app.delete('/cars/:id', (req, res) => {
 app.listen(5000, () => {
   console.log('Server is running on port 5000');
 });
+
+
+// get user profile
+app.get('/profile', (req, res) => {
+  const { username } = req.query;
+  if (!username) return res.status(400).send('Username is required');
+
+  const query = 'SELECT username, email, is_admin FROM users WHERE username = ?';
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('DB error:', err);
+      return res.status(500).send('Error fetching user profile');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('User not found');
+    }
+    res.json(results[0]);
+  });
+});
+
+// update user profile
+app.put('/profile', (req, res) => {
+  const { username, email, newPassword } = req.body;
+
+  if (!username) return res.status(400).send('Username is required');
+  if (!email && !newPassword) return res.status(400).send('Nothing to update');
+
+  const updates = [];
+  const params = [];
+
+  if (email) {
+    updates.push('email = ?');
+    params.push(email);
+  }
+
+  if (newPassword) {
+    updates.push('password = ?');
+    params.push(newPassword); // Note: Consider hashing in production
+  }
+
+  params.push(username);
+
+  const query = `UPDATE users SET ${updates.join(', ')} WHERE username = ?`;
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error('DB error:', err);
+      return res.status(500).send('Error updating profile');
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send('Profile updated successfully');
+  });
+});

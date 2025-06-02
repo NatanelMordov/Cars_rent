@@ -34,12 +34,13 @@ const Navbar = () => {
         </Link>
          {username ? (
           <div className="flex items-center gap-4">
+            <Link href="/Profile">
             <button
               className="text-black font-medium border border-gray-300 rounded-full px-4 py-2 hover:bg-gray-100 transition"
             >
               Hi, {username}
             </button>
-
+            </Link>
             <Link href="/cart">
               <button className="p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition">
                 <Image
