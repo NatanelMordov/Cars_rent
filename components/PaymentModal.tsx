@@ -61,6 +61,7 @@ const handlePayment = async () => {
       body: JSON.stringify({
         cartIds: cartItems.map((item) => item.cart_id),
         pointsUsed: appliedPoints,
+        totalAmount: discountedTotal,
       }),
     });
 
