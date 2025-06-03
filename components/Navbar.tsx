@@ -41,7 +41,7 @@ const Navbar = () => {
               Hi, {username}
             </button>
             </Link>
-            <Link href="/cart">
+            <Link href="/Cart">
               <button className="p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition">
                 <Image
                   src="/cart.svg"
