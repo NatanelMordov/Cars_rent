@@ -316,6 +316,45 @@ app.get('/cart/:username', (req, res) => {
 });
 
 
+// get all orders for a specific user, including car details
+app.get('/full-cart/:username', (req, res) => {
+  const { username } = req.params;
+
+  const query = `
+    SELECT 
+      cart.id AS cartId,
+      cart.start_date,
+      cart.end_date,
+      cart.totalprice,
+      cart.status,
+      cars.id AS carId,
+      cars.manufacturers,
+      cars.model,
+      cars.yearsOfProduction,
+      cars.fuels,
+      cars.gear,
+      cars.priceperday,
+      cars.location
+    FROM cart
+    JOIN cars ON cart.car_id = cars.id
+    WHERE cart.username = ?
+  `;
+
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('Error fetching cart data:', err);
+      return res.status(500).send('Error fetching cart data');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('No pending orders found for this user');
+    }
+
+    res.json(results);
+  });
+});
+
+
 ////////// remove item from cart//////////
 app.delete('/cart/:id', async (req, res) => {
   const { id } = req.params;
