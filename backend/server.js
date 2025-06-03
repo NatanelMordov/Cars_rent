@@ -388,8 +388,8 @@ app.get("/users/points/:username", (req, res) => {
 /////////////////CHECKOUT//////////////////
 // update status in cart table to complete///
 app.post("/cart/update-status", (req, res) => {
-  const { cartIds, pointsUsed } = req.body;
-  console.log("Received cartIds:", cartIds, pointsUsed);
+  const { cartIds, pointsUsed, totalAmount } = req.body;
+  console.log("Received cartIds:", cartIds, pointsUsed, totalAmount);
 
   if (!Array.isArray(cartIds) || cartIds.length === 0) {
     return res.status(400).json({ message: "No cart IDs provided" });
@@ -448,21 +448,32 @@ app.post("/cart/update-status", (req, res) => {
                 console.error("Error updating user points:", err);
                 return res.status(500).json({ message: "Failed to update user points" });
               }
-
-              return res.json({
-                message: "Cart, car inventory, and user points updated successfully"
-              });
+              
+              addBonusPoints(username, totalAmount, res);
             });
           } else {
-            return res.json({
-              message: "Cart and car inventory updated successfully (no points used)"
-            });
+            addBonusPoints(username, totalAmount, res);
           }
         });
       });
     });
   });
 });
+function addBonusPoints(username, totalAmount, res) {
+  const bonusPoints = Math.floor(totalAmount * 0.1); // 10% from the total amount to pay
+  const updateBonusQuery = `UPDATE users SET points = points + ? WHERE username = ?`;
+
+  db.query(updateBonusQuery, [bonusPoints, username], (err) => {
+    if (err) {
+      console.error("Error adding bonus points:", err);
+      return res.status(500).json({ message: "Failed to add bonus points" });
+    }
+
+    return res.json({
+      message: "Cart, car inventory, and user points updated successfully with bonus"
+    });
+  });
+}
 
 
 // listen to port 5000
