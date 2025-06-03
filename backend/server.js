@@ -217,10 +217,7 @@ app.delete('/cars/:id', (req, res) => {
 });
 
 
-// listen to port 5000
-app.listen(5000, () => {
-  console.log('Server is running on port 5000');
-});
+
 
 
 // get user profile
@@ -277,4 +274,159 @@ app.put('/profile', (req, res) => {
 
     res.status(200).send('Profile updated successfully');
   });
+});
+
+/////////////////////////////////ORDERS//////////////////////
+// get all pending orders for a specific user, including car details
+app.get('/cart/:username', (req, res) => {
+  const { username } = req.params;
+
+  const query = `
+    SELECT 
+      cart.id AS cartId,
+      cart.start_date,
+      cart.end_date,
+      cart.totalprice,
+      cart.status,
+      cars.id AS carId,
+      cars.manufacturers,
+      cars.model,
+      cars.yearsOfProduction,
+      cars.fuels,
+      cars.gear,
+      cars.priceperday,
+      cars.location
+    FROM cart
+    JOIN cars ON cart.car_id = cars.id
+    WHERE cart.username = ? AND cart.status = 'pending'
+  `;
+
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('Error fetching cart data:', err);
+      return res.status(500).send('Error fetching cart data');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('No pending orders found for this user');
+    }
+
+    res.json(results);
+  });
+});
+
+
+////////// remove item from cart//////////
+app.delete('/cart/:id', async (req, res) => {
+  const { id } = req.params;
+  const query = 'DELETE FROM cart WHERE id = ?';
+  db.query(query, [id], (err) => {
+    if (err) return res.status(500).send('Failed to delete cart');
+    res.sendStatus(200);
+  });
+});
+
+
+/////// GET POINTS PER USERNAME/////////
+app.get("/users/points/:username", (req, res) => {
+  const { username } = req.params;
+
+  const query = "SELECT points FROM users WHERE username = ?";
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.error("Error fetching user points:", err);
+      return res.status(500).json({ error: "Server error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ points: results[0].points });
+  });
+});
+
+/////////////////CHECKOUT//////////////////
+// update status in cart table to complete///
+app.post("/cart/update-status", (req, res) => {
+  const { cartIds, pointsUsed } = req.body;
+  console.log("Received cartIds:", cartIds, pointsUsed);
+
+  if (!Array.isArray(cartIds) || cartIds.length === 0) {
+    return res.status(400).json({ message: "No cart IDs provided" });
+  }
+
+  const placeholders = cartIds.map(() => "?").join(",");
+  const updateCartQuery = `UPDATE cart SET status = 'completed' WHERE id IN (${placeholders})`;
+
+  db.query(updateCartQuery, cartIds, (err, result) => {
+    if (err) {
+      console.error("Error updating cart status:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    // Get username
+    const getUsernameQuery = `SELECT username FROM cart WHERE id = ? LIMIT 1`;
+    db.query(getUsernameQuery, [cartIds[0]], (err, userResult) => {
+      if (err || !userResult.length) {
+        console.error("Error fetching username:", err);
+        return res.status(500).json({ message: "Failed to retrieve username" });
+      }
+
+      const username = userResult[0].username;
+
+      // Get car IDs
+      const getCarIdsQuery = `SELECT car_id FROM cart WHERE id IN (${placeholders})`;
+      db.query(getCarIdsQuery, cartIds, (err, carResults) => {
+        if (err) {
+          console.error("Error retrieving car IDs:", err);
+          return res.status(500).json({ message: "Failed to retrieve car IDs" });
+        }
+
+        const carIds = carResults.map(row => row.car_id);
+
+        if (carIds.length === 0) {
+          return res.json({ message: "Cart updated but no cars found" });
+        }
+
+        const updateCarQuery = `
+          UPDATE cars 
+          SET inventory = inventory - 1 
+          WHERE id IN (${carIds.map(() => "?").join(",")})`;
+
+        db.query(updateCarQuery, carIds, (err, carUpdateResult) => {
+          if (err) {
+            console.error("Error updating car quantities:", err);
+            return res.status(500).json({ message: "Failed to update car stock" });
+          }
+
+          // Update points if used
+          if (pointsUsed && pointsUsed > 0) {
+            const updatePointsQuery = `UPDATE users SET points = points - ? WHERE username = ?`;
+
+            db.query(updatePointsQuery, [pointsUsed, username], (err, pointsResult) => {
+              if (err) {
+                console.error("Error updating user points:", err);
+                return res.status(500).json({ message: "Failed to update user points" });
+              }
+
+              return res.json({
+                message: "Cart, car inventory, and user points updated successfully"
+              });
+            });
+          } else {
+            return res.json({
+              message: "Cart and car inventory updated successfully (no points used)"
+            });
+          }
+        });
+      });
+    });
+  });
+});
+
+
+// listen to port 5000
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
