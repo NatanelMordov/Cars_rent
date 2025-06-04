@@ -10,15 +10,15 @@ interface CarCardProps{
 }
 
 function CarCard({car}:CarCardProps) {
-  const {City_Mpg, year, make, model, transmission, drive }= car;
-  const carRent = calculateCarRent(City_Mpg, year)
+  const {fuels, yearsOfProduction, manufacturers, model, gear, priceperday }= car;
+  //const carRent = calculateCarRent(fuels, yearsOfProduction)
   const [isOpen, setIsOpen] = useState(false);
   
   return (
     <div className='car-card group'>
         <div className='car-card__content'>
             <h2 className='car-card__content-title'>
-                {make} {model}
+                {manufacturers} {model}
             </h2>
         </div>
 
@@ -26,7 +26,7 @@ function CarCard({car}:CarCardProps) {
             <span className='self-start text-[14px] font-semibold'>
                 NIS
             </span>
-            {carRent}
+            {priceperday}
             <span className='self-end text-[14px] font-medium'>
                 /day
             </span>
@@ -41,16 +41,16 @@ function CarCard({car}:CarCardProps) {
           <div className='flex flex-col justify-center items-center gap-2'>
             <Image src='/steering-wheel.svg' width={20} height={20} alt='steering wheel' />
             <p className='text-[14px] leading-[17px]'>
-              {transmission === "a" ? "Automatic" : "Manual"}
+              {gear}
             </p>
           </div>
           <div className="car-card__icon">
             <Image src="/tire.svg" width={20} height={20} alt="seat" />
-            <p className="car-card__icon-text">{drive ? drive.toUpperCase() : 'N/A'}</p>
+            <p className="car-card__icon-text">{yearsOfProduction}</p>
           </div>
           <div className="car-card__icon">
             <Image src="/gas.svg" width={20} height={20} alt="seat" />
-            <p className="car-card__icon-text">{City_Mpg} MPG</p>
+            <p className="car-card__icon-text">{fuels}</p>
           </div>
         </div>
 

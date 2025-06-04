@@ -1,9 +1,10 @@
 "use client";
 import Image from 'next/image';
-import {Fragment} from 'react';
+import {Fragment, useState, useEffect} from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { CarProps } from '@/types';
 import { generateCarImageUrl } from '@/utils';
+import { useRouter } from 'next/navigation';
 
 interface CarDeatailsProps {
     isOpen: boolean;
@@ -12,6 +13,58 @@ interface CarDeatailsProps {
 }
 
 function CardDetails({isOpen, closeModel, car}: CarDeatailsProps) {
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
+
+
+const handleAddToCart = async () => {
+  if (!username || !startDate || !endDate) return;
+
+  const dayDiff =
+    (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  const totalPrice = Math.round(dayDiff) * (car.priceperday || 100); // אפשר לשים מחיר דיפולטי אם אין
+
+  try {
+    const res = await fetch('http://localhost:5000/cart/add-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        car_id: car.id,
+        start_date: startDate,
+        end_date: endDate,
+        totalprice: totalPrice,
+        status: 'PENDING',
+      }),
+    });
+
+    if (res.ok) {
+      setShowDateModal(false);
+      setShowSuccessModal(true);
+    } else {
+      alert('Failed to add to cart');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Error occurred');
+  }
+};
+
   return (
     <>
     <Transition appear show={isOpen} as={Fragment}>
@@ -61,7 +114,7 @@ function CardDetails({isOpen, closeModel, car}: CarDeatailsProps) {
 
                 <div className='flex-1 flex flex-col gap-2'>
                   <h2 className='font-semibold text-xl capitalize'>
-                    {car.make} {car.model}
+                    {car.manufacturers} {car.model}
                   </h2>
                   <div className='mt-3 flex flex-wrap gap-4'>
                     {Object.entries(car).map(([key,value])=>(
@@ -72,11 +125,84 @@ function CardDetails({isOpen, closeModel, car}: CarDeatailsProps) {
                     ))}
                   </div>
                 </div>
+                {/* Add to Cart Only if user logged in */}
+                {username && (
+                  <div className="w-full flex justify-center pt-4">
+                    <button
+                      type="button"
+                      className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+                      onClick={() => setShowDateModal(true)}
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                   )}
+                  {/* תיבת בחירת תאריכים */}
+                  {showDateModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 z-20 flex justify-center items-center">
+                      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl z-30">
+                        <h3 className="text-lg font-semibold mb-4 text-center">Select Dates</h3>
+                        <div className="flex flex-col gap-4 mb-4">
+                          <label className="flex flex-col">
+                            Start Date:
+                            <input
+                              type="date"
+                              value={startDate}
+                              onChange={(e) => setStartDate(e.target.value)}
+                              className="border rounded px-3 py-2 mt-1"
+                            />
+                          </label>
+                          <label className="flex flex-col">
+                            End Date:
+                            <input
+                              type="date"
+                              value={endDate}
+                              onChange={(e) => setEndDate(e.target.value)}
+                              className="border rounded px-3 py-2 mt-1"
+                            />
+                          </label>
+                        </div>
+                        <div className="flex justify-between">
+                          <button
+                            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+                            onClick={() => setShowDateModal(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                            onClick={handleAddToCart}
+                            disabled={!startDate || !endDate}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {showSuccessModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 z-20 flex justify-center items-center">
+                      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl z-30 text-center">
+                        <h3 className="text-lg font-semibold mb-4">Added to Cart Successfully!</h3>
+                        <button
+                          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+                          onClick={() => {
+                            setShowSuccessModal(false);
+                            router.push('/Cart');
+                          }}
+                        >
+                          Go to Cart
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </Dialog.Panel>
                 </Transition.Child>
             
                 </div>
             </div>
+            
         </Dialog>
     </Transition>
     </>

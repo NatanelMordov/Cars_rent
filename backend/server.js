@@ -476,6 +476,31 @@ function addBonusPoints(username, totalAmount, res) {
 }
 
 
+//////ADD A NEW ORDER//////////
+app.post('/cart/add-order', (req, res) => {
+  const { username, car_id, start_date, end_date, totalprice } = req.body;
+  console.log("Received:", username, car_id, start_date, end_date, totalprice);
+
+  const query = `INSERT INTO cart (username, car_id, start_date, end_date, totalprice, status)
+                 VALUES (?, ?, ?, ?, ?, 'pending')`;
+
+  db.query(query, [username, car_id, start_date, end_date, totalprice], (err, result) => {
+    if (err) {
+      console.error('Error inserting into cart:', err);
+      return res.status(500).send('Error adding to cart');
+    }
+
+    res.status(201).json({
+      id: result.insertId,
+      username,
+      car_id,
+      start_date,
+      end_date,
+      totalprice
+    });
+  });
+});
+
 // listen to port 5000
 app.listen(5000, () => {
   console.log('Server is running on port 5000');

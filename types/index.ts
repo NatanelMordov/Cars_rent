@@ -18,7 +18,7 @@ export interface SearchModelProps{
     setModel:(model: string)=>void;
 }
 
-export interface CarProps{
+/*export interface CarProps{
     id: string,
     City_Mpg:number,
     class:string,
@@ -30,7 +30,20 @@ export interface CarProps{
     make:string,
     model:string,
     transmission:string,
+    priceperday:number,
     year:number;
+}*/
+
+export interface CarProps{
+    id: number,
+    manufacturers: string,
+    model:string,
+    yearsOfProduction: number,
+    fuels: string,
+    gear: string,
+    priceperday: number,
+    inventory: number;
+
 }
 export interface FilterProps{
   manufactur: string;
