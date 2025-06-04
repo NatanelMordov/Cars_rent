@@ -54,7 +54,7 @@ function CustomFilter({ title }: CustomFilterProps) {
               {selected || (title === 'fuel' ? 'Fuels' : 'Year')}
             </span>
             <Image
-              src="/chevron-up-down.svg"
+              src="/chevron-up-down1.svg"
               width={20}
               height={20}
               className='ml-4 object-contain'
