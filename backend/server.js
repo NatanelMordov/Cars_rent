@@ -225,7 +225,7 @@ app.get('/profile', (req, res) => {
   const { username } = req.query;
   if (!username) return res.status(400).send('Username is required');
 
-  const query = 'SELECT username, email, is_admin FROM users WHERE username = ?';
+  const query = 'SELECT username, email, is_admin, points FROM users WHERE username = ?';
   db.query(query, [username], (err, results) => {
     if (err) {
       console.error('DB error:', err);

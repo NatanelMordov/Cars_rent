@@ -12,6 +12,14 @@ interface CarDeatailsProps {
     car: CarProps;
 }
 
+function formatKey(key: string): string {
+  
+  return key
+    .replace(/[_-]/g, ' ')              
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (char) => char.toUpperCase()); 
+}
+
 function CardDetails({isOpen, closeModel, car}: CarDeatailsProps) {
   const [showDateModal, setShowDateModal] = useState(false);
   const [startDate, setStartDate] = useState('');
@@ -117,10 +125,26 @@ const handleAddToCart = async () => {
                     {car.manufacturers} {car.model}
                   </h2>
                   <div className='mt-3 flex flex-wrap gap-4'>
-                    {Object.entries(car).map(([key,value])=>(
-                        <div className='flex justify-between gap-5 w-full text-right' key={key}>
-                            <h4>{key}</h4>
-                            <p>{value}</p>  
+
+                    {Object.entries(car)
+                      .filter(([key]) => key !== 'id' && (key !== 'inventory' || (typeof car.inventory === 'number' && car.inventory < 4)))
+                      .map(([key, value]) => (
+                        <div
+                          className="flex justify-between gap-5 w-full items-center text-right"
+                          key={key}
+                        >
+                          <h4 className="whitespace-nowrap">{formatKey(key)}</h4>
+                          <div className="flex items-center gap-2">
+                            <p>{key === 'inventory' && typeof value === 'number' && value < 4 ? `Only ${value} cars left..`: value}</p>
+                            {key === 'location' && typeof value === 'string' && (
+                              <button
+                                onClick={() => router.push(`/map?location=${encodeURIComponent(value)}`)}
+                                className="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                              >
+                                View on Map
+                              </button>
+                            )}
+                          </div>
                         </div>
                     ))}
                   </div>
