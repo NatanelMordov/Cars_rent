@@ -12,6 +12,7 @@ const LoginPopup = ({}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // only for sing up
+  const [errorMessage, setErrorMessage] = useState('');
 
   // פונקציה לשליחת בקשה ל-login
   const handleLogin = async (e: { preventDefault: () => void; }) => {
@@ -55,6 +56,17 @@ const LoginPopup = ({}) => {
   // פונקציה לשליחת בקשה ל-sign up
   const handleSignUp = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
+
+      if (!email || !password || !name) {
+      alert('Please fill in all fields.');
+      return;
+  }
+
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
 
     const signUpData = { email, password, name };
 
