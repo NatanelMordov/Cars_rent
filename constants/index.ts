@@ -74,25 +74,23 @@ export const manufacturers = [
     {
       title: "About",
       links: [
-        { title: "How it works", url: "https://github.com/NatanelMordov/MN_Cars" },
-        { title: "Partnership", url: "https://natanelmordovsite.netlify.app/" },
-        { title: "Bussiness Relation", url: "https://natanelmordovsite.netlify.app/" },
+        { title: "How it works", url: "https://github.com/NatanelMordov/Cars_rent" }
       ],
     },
-      {
-        title: "Company",
+       {
+        title: "Help",
         links: [
-          { title: "Blog", url: "/" },
-          { title: "Podcast", url: "/" },
-          { title: "Invite a friend", url: "/" },
+          { title: "Q & A", url: "./FAQ" }
         ],
       },
     {
-      title: "Socials",
+      title: "Created By",
       links: [
-        { title: "Linkedin", url: "https://www.linkedin.com/in/natanel-mordov-171a081b5/" },
-        { title: "Twitter", url: "/" },
-        { title: "Facebook", url: "/" },
+        { title: "Lina Nijem", url: "https://www.linkedin.com/in/lina-nijem-615855156/" },
+        { title: "Roger Hino", url: "https://www.linkedin.com/in/roger-hino-932418216/" },
+        { title: "Lior Zemah", url: "https://www.linkedin.com/in/lior-zemah/" },
+        { title: "Maytal Mordov", url: "https://www.linkedin.com/in/maytal-mordov-15187b28b/" },
+        { title: "Natanel Mordov", url: "https://www.linkedin.com/in/natanel-mordov-171a081b5/" }
       ],
     },
   ];

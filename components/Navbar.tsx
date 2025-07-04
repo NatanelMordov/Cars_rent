@@ -52,6 +52,20 @@ const Navbar = () => {
                 />
               </button>
             </Link>
+            <button className="p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition"
+               onClick={() => {
+                  sessionStorage.clear(); 
+                  window.location.href = "/";
+                }}>
+                <Image
+                  src="/logout.svg"
+                  alt="Logout"
+                  width={24}
+                  height={24}
+                  className="object-contain"
+                />
+                
+              </button>
           </div>
         ) : (
            <Link

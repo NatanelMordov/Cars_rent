@@ -3,9 +3,7 @@ import React, { useState } from 'react';
 import "../app/globals.css";
 import '../public/close.svg';
 import Link from 'next/link';
-//import { useRouter } from 'next/navigation';
 import router from 'next/router';
-// import axios from 'axios';
 
 const LoginPopup = ({}) => {
   const [currState, setCurrState] = useState("Sign Up");
@@ -13,8 +11,16 @@ const LoginPopup = ({}) => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // only for sing up
   const [errorMessage, setErrorMessage] = useState('');
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
-  // פונקציה לשליחת בקשה ל-login
+  ////
+    const showMessage = (message: string) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+  };
+
+  // Function to send a request to Login
   const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
@@ -47,24 +53,24 @@ const LoginPopup = ({}) => {
       }
     } catch (err) {
       console.error('Error during login:', err);
-      alert('An error occurred during login');
+      showMessage("An error occurred during login");
     }
   };
 
 
 
-  // פונקציה לשליחת בקשה ל-sign up
+  // Function to send a request to -sign up
   const handleSignUp = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
       if (!email || !password || !name) {
-      alert('Please fill in all fields.');
+      showMessage("Please fill in all fields!");
       return;
   }
 
    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    alert('Please enter a valid email address');
+    showMessage("Please enter a valid email address");
     return;
   }
 
@@ -80,14 +86,15 @@ const LoginPopup = ({}) => {
       });
 
       if (response.ok) {
-        alert('Sign-up successful');
-        setCurrState("Login"); // לאחר ההרשמה, נעבור לדף הלוגין
+        showMessage("Welcome! Your account was created successfully and you received 150 welcome points 🎉");
+        setCurrState("Login"); // After sign up -> move to log in 
       } else {
-        alert('Sign-up failed: ' + response.statusText);
+        const text = await response.text();
+        showMessage("Sign-up failed: " + text);
       }
     } catch (err) {
       console.error('Error during sign up:', err);
-      alert('An error occurred during sign-up');
+      showMessage("An error occurred during sign-up");
     }
   };
 

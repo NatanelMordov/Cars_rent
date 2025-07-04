@@ -56,8 +56,8 @@ app.post('/signup', (req, res) => {
     if (err) return res.status(500).send('Error in server');
     if (result.length > 0) return res.status(400).send('Email already in use');
 
-    const insertQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-    db.query(insertQuery, [name, email, password], (err, result) => {
+    const insertQuery = 'INSERT INTO users (username, email, password, points) VALUES (?, ?, ?, ?)';
+    db.query(insertQuery, [name, email, password, 150], (err, result) => {
       if (err) return res.status(500).send('Error in server');
       res.status(201).send('User created successfully');
     });
