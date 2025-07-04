@@ -18,6 +18,7 @@ interface OrderItem {
   fuels: string;
   gear: string;
   location: string;
+  status: string;
 }
 
 export default function ProfilePage() {
@@ -30,8 +31,9 @@ export default function ProfilePage() {
 
   const date_now = new Date();
 
-  const futureOrders = orders.filter(order => new Date(order.end_date) >= date_now);
+  const futureOrders = orders.filter(order => new Date(order.end_date) >= date_now && order.status === 'completed');
   const pastOrders = orders.filter(order => new Date(order.end_date) < date_now);
+  const pendingOrders = orders.filter(order => order.status === 'pending');
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -153,6 +155,33 @@ export default function ProfilePage() {
 
         {/* Right Column: Orders */}
         <div dir="ltr">
+         <section className="mb-10">
+            <h2 className="text-3xl font-bold text-yellow-500 mb-6 border-b-2 border-yellow-400 pb-2 tracking-wide">
+              🕓 Pending Orders (Unpaid)
+            </h2>
+            {pendingOrders.length === 0 ? (
+              <p className="text-gray-600">No pending orders.</p>
+            ) : (
+              pendingOrders.map(order => (
+                <div key={order.cartId} className="border border-yellow-300 bg-yellow-50 p-4 rounded-lg mb-4">
+                  <p><strong>Car:</strong> {order.manufacturers} - {order.model}</p>
+                  <p><strong>From:</strong> {order.start_date.split("T")[0]} <strong>&nbsp;&nbsp;&nbsp; To: &nbsp;&nbsp;&nbsp;</strong> {order.end_date.split("T")[0]}</p>
+                  <p><strong>Location:</strong> {order.location}</p>
+                  <p><strong>Fuel:</strong> {order.fuels} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp; <strong>Gear:</strong> {order.gear}</p>
+                  <p><strong>Total Price:</strong> {order.totalprice}₪</p>
+                  <p className="text-yellow-600 font-semibold">⚠️ This order is not paid yet</p>
+
+                  <Link
+          href="/Cart"
+          className="inline-block px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium text-sm rounded transition"
+        >
+          Continue to Checkout
+        </Link>
+                </div>
+                
+              ))
+            )}
+          </section>
           <section className="mb-10">
             <h2 className="text-3xl font-bold text-blue-400 mb-6 border-b-2 border-blue-300 pb-2 tracking-wide">
               🚗 Upcoming Orders
