@@ -365,6 +365,33 @@ app.delete('/cart/:id', async (req, res) => {
   });
 });
 
+///////////Remove Item after buying/////////
+app.delete('/completed-order/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log('DELETE /completed-order/:id called with id:', req.params.id);
+
+  // first step: get order details includingusername and totalprice
+  const getQuery = 'SELECT username, totalprice FROM cart WHERE id = ? AND status = "completed"';
+  db.query(getQuery, [id], (err, results) => {
+    if (err) return res.status(500).send("Failed to fetch order");
+    if (results.length === 0) return res.status(404).send("Completed order not found");
+
+    const { username, totalprice } = results[0];
+
+    // step 2: update points for this user in users table
+    const updatePointsQuery = 'UPDATE users SET points = points + ? WHERE username = ?';
+    db.query(updatePointsQuery, [totalprice, username], (err2) => {
+      if (err2) return res.status(500).send("Failed to update user points");
+
+      // step 3: delete (remove) order from cart table
+      const deleteQuery = 'DELETE FROM cart WHERE id = ?';
+      db.query(deleteQuery, [id], (err3) => {
+        if (err3) return res.status(500).send("Failed to delete order");
+        res.sendStatus(200);
+      });
+    });
+  });
+});
 
 /////// GET POINTS PER USERNAME/////////
 app.get("/users/points/:username", (req, res) => {
