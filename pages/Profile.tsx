@@ -28,12 +28,48 @@ export default function ProfilePage() {
   const [message, setMessage] = useState("");
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [ordersError, setOrdersError] = useState("");
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [cartIdToDelete, setCartIdToDelete] = useState<number | null>(null);
+  const [confirmMessage, setConfirmMessage] = useState("");
 
   const date_now = new Date();
 
   const futureOrders = orders.filter(order => new Date(order.end_date) >= date_now && order.status === 'completed');
   const pastOrders = orders.filter(order => new Date(order.end_date) < date_now);
   const pendingOrders = orders.filter(order => order.status === 'pending');
+  
+  const openConfirmModal = (cartId: number) => {
+  setCartIdToDelete(cartId);
+  setConfirmMessage("Are you sure you want to delete this completed order? The amount will be refunded as points.");
+  setConfirmOpen(true);
+};
+
+  const confirmDelete = async () => {
+  if (cartIdToDelete === null) return;
+
+  try {
+    const res = await fetch(`http://localhost:5000/completed-order/${cartIdToDelete}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to delete and refund order");
+
+    setOrders((prevOrders) => prevOrders.filter((order) => order.cartId !== cartIdToDelete));
+
+    const deletedOrder = orders.find(order => order.cartId === cartIdToDelete);
+    if (deletedOrder) {
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        points: prevProfile.points + deletedOrder.totalprice,
+      }));
+    }
+
+    setMessage("Order deleted and points refunded!");
+  } catch (err) {
+    console.error(err);
+    setMessage("Failed to delete order.");
+  } finally {
+    setConfirmOpen(false);
+    setCartIdToDelete(null);
+  }
+};
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem("username");
@@ -64,6 +100,21 @@ export default function ProfilePage() {
       setMessage(err.response?.data || "Error updating profile");
     }
   };
+  
+  const handleRemovePendingOrder = (cartId: number) => {
+  if (confirm("Are you sure you want to remove this pending order?")) {
+    fetch(`http://localhost:5000/cart/${cartId}`, { method: "DELETE" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete order");
+        setOrders((prevOrders) => prevOrders.filter((order) => order.cartId !== cartId));
+        setMessage("Order removed successfully.");
+      })
+      .catch((err) => {
+        console.error(err);
+        setMessage("Failed to remove order.");
+      });
+  }
+};
 
   useEffect(() => {
   if (username) {
@@ -170,13 +221,17 @@ export default function ProfilePage() {
                   <p><strong>Fuel:</strong> {order.fuels} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp; <strong>Gear:</strong> {order.gear}</p>
                   <p><strong>Total Price:</strong> {order.totalprice}₪</p>
                   <p className="text-yellow-600 font-semibold">⚠️ This order is not paid yet</p>
-
-                  <Link
-          href="/Cart"
-          className="inline-block px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium text-sm rounded transition"
-        >
-          Continue to Checkout
-        </Link>
+                  <div className="flex gap-3 mt-3">
+                    <Link href="/Cart" 
+                    className="inline-block px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium text-sm rounded transition">
+                      Continue to Checkout
+                    </Link>
+                    <button
+                      onClick={() => handleRemovePendingOrder(order.cartId)}
+                      className="inline-block px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium text-sm rounded transition">
+                      Cancel Order
+                    </button>
+                  </div>
                 </div>
                 
               ))
@@ -196,6 +251,12 @@ export default function ProfilePage() {
               <p><strong>Location:</strong> {order.location}</p>
               <p><strong>Fuel:</strong> {order.fuels} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp; <strong>Gear:</strong> {order.gear}</p>
               <p><strong>Total Price:</strong> {order.totalprice}₪</p>
+              <button
+                  onClick={() => openConfirmModal(order.cartId)}
+                  className="px-4 py-2 border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-400 rounded-md text-sm transition"
+                >
+                  Cancel Order
+                </button>
             </div>
           ))
         )}
@@ -220,6 +281,27 @@ export default function ProfilePage() {
           ))
         )}
           </section>
+                    {isConfirmOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+      <p className="mb-4 text-gray-800">{confirmMessage}</p>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setConfirmOpen(false)}
+          className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={confirmDelete}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </main>
     </div>
