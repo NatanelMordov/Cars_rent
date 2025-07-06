@@ -32,7 +32,7 @@ try {
     
 }
 
-// פונקציה לחישוב עלות השכרה
+// calculateCarRent
 export const calculateCarRent = (city_mpg: number, year: number) => {
     const basePricePerDay = 210; // Base rental price per day in dollars
     const mileageFactor = 0.2; // Additional rate per mile driven

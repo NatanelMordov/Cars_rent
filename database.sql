@@ -37,7 +37,9 @@ CREATE TABLE cars (
   gear VARCHAR(100) NOT NULL,
   priceperday INT NOT NULL,
   location VARCHAR(100)  NOT NULL,
-  inventory INT not null
+  inventory INT not null,
+  rating_sum INT DEFAULT 0,
+  rating_count INT DEFAULT 0
 );
 
 
@@ -67,7 +69,8 @@ CREATE TABLE cart (
   start_date date NOT NULL,
   end_date date NOT NULL, 
   totalprice INT NOT NULL, 
-  status varchar(50) not null
+  status varchar(50) not null,
+  rating INT DEFAULT NULL
 );
 
 INSERT INTO cart (username, car_id, start_date, end_date, totalprice, status)

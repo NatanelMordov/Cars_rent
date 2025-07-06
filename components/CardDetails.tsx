@@ -135,7 +135,21 @@ const handleAddToCart = async () => {
                         >
                           <h4 className="whitespace-nowrap">{formatKey(key)}</h4>
                           <div className="flex items-center gap-2">
-                            <p>{key === 'inventory' && typeof value === 'number' && value < 4 ? `Only ${value} cars left..`: value}</p>
+                            <p>{key === 'inventory' && typeof value === 'number' ? (
+                                value === 0 ? (
+                                  <p className="text-gray-500 font-medium italic">⛔ Currently unavailable</p>
+                                ) : value < 4 ? (
+                                  <p className="text-red-500 font-semibold animate-pulse">
+                                    Only {value} left..
+                                  </p>
+                                ) : (
+                                  <p>{value}</p>
+                                )
+                              ) : (
+                                <p>{value}</p>
+                              )}
+                            </p>
+                            
                             {key === 'location' && typeof value === 'string' && (
                               <button
                                 onClick={() => router.push(`/map?location=${encodeURIComponent(value)}`)}
@@ -154,13 +168,17 @@ const handleAddToCart = async () => {
                   <div className="w-full flex justify-center pt-4">
                     <button
                       type="button"
-                      className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+                      disabled={isOutOfStock}
                       onClick={() => setShowDateModal(true)}
+                      className={`px-6 py-2 rounded-xl transition font-semibold
+                        ${isOutOfStock
+                          ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                          : "bg-blue-600 text-white hover:bg-blue-700"}`}
                     >
-                      Add to Cart
+                      {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                     </button>
                   </div>
-                   )}
+                )}
                   {/* תיבת בחירת תאריכים */}
                   {showDateModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 z-20 flex justify-center items-center">
