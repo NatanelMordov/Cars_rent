@@ -19,6 +19,7 @@ interface OrderItem {
   gear: string;
   location: string;
   status: string;
+  rating?: number;
 }
 
 export default function ProfilePage() {
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [cartIdToDelete, setCartIdToDelete] = useState<number | null>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
+  const [selectedRatings, setSelectedRatings] = useState<{ [carId: number]: number }>({});
 
   const date_now = new Date();
 
@@ -86,7 +88,19 @@ export default function ProfilePage() {
         .catch(() => setMessage("Failed to load profile"));
     }
   }, [username]);
+  
+    useEffect(() => {
+  if (orders.length > 0) {
+    const initialRatings = orders.reduce((acc, order) => {
+      if (order.rating) acc[order.cartId] = order.rating;
+      return acc;
+    }, {} as { [key: number]: number });
+    setSelectedRatings(initialRatings);
+  }
+}, [orders]);
 
+
+/////////////Update user/////////////
   const handleUpdate = async () => {
     try {
       await axios.put("http://localhost:5000/profile", {
@@ -101,6 +115,7 @@ export default function ProfilePage() {
     }
   };
   
+  //////////////Remove pending items//////////
   const handleRemovePendingOrder = (cartId: number) => {
   if (confirm("Are you sure you want to remove this pending order?")) {
     fetch(`http://localhost:5000/cart/${cartId}`, { method: "DELETE" })
@@ -116,6 +131,25 @@ export default function ProfilePage() {
   }
 };
 
+////////////////Rating///////
+
+const handleRatingClick = async (carId: number, rating: number, cartId: number) => {
+  // local save
+  setSelectedRatings((prev) => ({ ...prev, [carId]: rating }));
+  try {
+    const res = await fetch("http://localhost:5000/rate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ carId, rating, cartId }),
+    });
+    if (!res.ok) throw new Error("Rating failed");
+    alert("Thanks for rating!");
+  } catch (err) {
+    console.error("Rating error:", err);
+  }
+};
+
+//////////////////////
   useEffect(() => {
   if (username) {
     axios
@@ -266,20 +300,35 @@ export default function ProfilePage() {
             <h2 className="text-3xl font-bold text-gray-400 mb-6 border-b-2 border-gray-300 pb-2 tracking-wide">
               📜 Past Orders
             </h2>
-
             {pastOrders.length === 0 ? (
               <p className="text-gray-600">No past orders.</p>
             ) : (
-              pastOrders.map(order => (
-                <div key={order.cartId} className="border p-4 rounded-lg mb-4">
-              <p><strong>Car:</strong> {order.manufacturers} - {order.model}</p>
-              <p><strong>From:</strong> {order.start_date.split("T")[0]} <strong>&nbsp;&nbsp;&nbsp; To: &nbsp;&nbsp;&nbsp;</strong> {order.end_date.split("T")[0]}</p>
-              <p><strong>Location:</strong> {order.location}</p>
-              <p><strong>Fuel:</strong> {order.fuels} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp; <strong>Gear:</strong> {order.gear}</p>
-              <p><strong>Total Price:</strong> {order.totalprice}₪</p>
-            </div>
-          ))
-        )}
+              pastOrders.map(order => {
+                console.log("order object", order); // temp log
+                  const currentRating = selectedRatings[order.cartId] ?? order.rating ?? 0;
+                
+                return (
+                  <div key={order.cartId} className="border p-4 rounded-lg mb-4">
+                    <p><strong>Car:</strong> {order.manufacturers} - {order.model}</p>
+                    <p><strong>From:</strong> {order.start_date.split("T")[0]} <strong>&nbsp;&nbsp;&nbsp; To: &nbsp;&nbsp;&nbsp;</strong> {order.end_date.split("T")[0]}</p>
+                    <p><strong>Location:</strong> {order.location}</p>
+                    <p><strong>Fuel:</strong> {order.fuels} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp; <strong>Gear:</strong> {order.gear}</p>
+                    <p><strong>Total Price:</strong> {order.totalprice}₪</p>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                    <button
+                      key={value}
+                      onClick={() => handleRatingClick(order.carId, value, order.cartId)}
+                      className={`text-2xl px-1 transition-all ${
+                        currentRating >= value ? "text-yellow-400" : "text-gray-300"
+                      }`}
+                    >
+                      ★
+                    </button>
+                    ))}
+                  </div>
+                );
+              })
+            )}
           </section>
                     {isConfirmOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
