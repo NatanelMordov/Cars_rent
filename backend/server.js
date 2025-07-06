@@ -134,7 +134,11 @@ app.get('/cars', (req, res) => {
   console.log('Incoming request to /cars with query:', req.query);
   const { manufactur, model, fuel, year, location} = req.query;
 
-  let query = 'SELECT * FROM cars';
+  let query = `
+    SELECT *, 
+           IFNULL(rating_sum / NULLIF(rating_count, 0), 0) AS averageRating
+    FROM cars
+  `;
   const conditions = [];
   const params = [];
 
@@ -162,9 +166,7 @@ app.get('/cars', (req, res) => {
     conditions.push('location = ?');
     params.push(location);
   }
-
   
-
   // adding the conditions to the query
   if (conditions.length > 0) {
     query += ' WHERE ' + conditions.join(' AND ');
@@ -215,9 +217,6 @@ app.delete('/cars/:id', (req, res) => {
     res.sendStatus(200);
   });
 });
-
-
-
 
 
 // get user profile
@@ -334,7 +333,8 @@ app.get('/full-cart/:username', (req, res) => {
       cars.fuels,
       cars.gear,
       cars.priceperday,
-      cars.location
+      cars.location,
+      cart.rating
     FROM cart
     JOIN cars ON cart.car_id = cars.id
     WHERE cart.username = ?
@@ -365,6 +365,7 @@ app.delete('/cart/:id', async (req, res) => {
   });
 });
 
+
 ///////////Remove Item after buying/////////
 app.delete('/completed-order/:id', async (req, res) => {
   const { id } = req.params;
@@ -391,6 +392,41 @@ app.delete('/completed-order/:id', async (req, res) => {
       });
     });
   });
+});
+
+
+
+/////////Add Rating for each past order/////
+app.post("/rate", (req, res) => {
+  const { carId, rating, cartId } = req.body;
+
+  if (!carId || !rating || rating < 1 || rating > 5 || !cartId) {
+    return res.status(400).send("Invalid rating data");
+  }
+
+  db.query(
+    "UPDATE cars SET rating_sum = rating_sum + ?, rating_count = rating_count + 1 WHERE id = ?",
+    [rating, carId],
+    (err1) => {
+      if (err1) {
+        console.error("Error updating car rating:", err1);
+        return res.status(500).send("Error updating car rating");
+      }
+
+      db.query(
+        "UPDATE cart SET rating = ? WHERE id = ?",
+        [rating, cartId],
+        (err2) => {
+          if (err2) {
+            console.error("Error saving rating to cart:", err2);
+            return res.status(500).send("Error saving rating to cart");
+          }
+
+          res.send("Rating saved successfully");
+        }
+      );
+    }
+  );
 });
 
 /////// GET POINTS PER USERNAME/////////

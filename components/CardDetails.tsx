@@ -127,7 +127,7 @@ const handleAddToCart = async () => {
                   <div className='mt-3 flex flex-wrap gap-4'>
 
                     {Object.entries(car)
-                      .filter(([key]) => key !== 'id' && (key !== 'inventory' || (typeof car.inventory === 'number' && car.inventory < 4)))
+                      .filter(([key]) => key !== 'id' && key !== 'rating_sum' && key !== 'rating_count' && (key !== 'inventory' || (typeof car.inventory === 'number' && car.inventory < 4)))
                       .map(([key, value]) => (
                         <div
                           className="flex justify-between gap-5 w-full items-center text-right"

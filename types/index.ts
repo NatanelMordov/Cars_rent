@@ -18,21 +18,6 @@ export interface SearchModelProps{
     setModel:(model: string)=>void;
 }
 
-/*export interface CarProps{
-    id: string,
-    City_Mpg:number,
-    class:string,
-    combination_mpg:number,
-    cylinders:number,
-    displacement:number,
-    drive:string,
-    highway_mpg:number,
-    make:string,
-    model:string,
-    transmission:string,
-    priceperday:number,
-    year:number;
-}*/
 
 export interface CarProps{
     id: number,
@@ -42,7 +27,8 @@ export interface CarProps{
     fuels: string,
     gear: string,
     priceperday: number,
-    inventory: number;
+    inventory: number,
+    averageRating?: number;
 
 }
 export interface FilterProps{

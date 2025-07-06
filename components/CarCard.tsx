@@ -11,8 +11,25 @@ interface CarCardProps{
 
 function CarCard({car}:CarCardProps) {
   const {fuels, yearsOfProduction, manufacturers, model, gear, priceperday }= car;
-  //const carRent = calculateCarRent(fuels, yearsOfProduction)
   const [isOpen, setIsOpen] = useState(false);
+const numericRating = Number(car.averageRating ?? 0);
+  
+  // func to present the stars
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          style={{ color: i <= averageRating ? '#FFD700' : '#d3d3d3', fontSize: '20px', marginRight: '2px' }}
+          aria-label={i <= averageRating ? "Filled star" : "Empty star"}
+        >
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
   
   return (
     <div className='car-card group'>
@@ -20,6 +37,13 @@ function CarCard({car}:CarCardProps) {
             <h2 className='car-card__content-title'>
                 {manufacturers} {model}
             </h2>
+        </div>
+        
+        <div className="rating mt-2">
+          {renderStars()}
+          <span className="ml-2 text-sm text-gray-600">
+            {numericRating > 0 ? `(${numericRating.toFixed(1)})` : "Not yet rated"}
+          </span>
         </div>
 
         <p className='flex mt-6 text-[32px] font-extrabold'>
