@@ -85,7 +85,7 @@ const handlePayment = async () => {
 
   return (
     <>
-      {/* מודאל ראשי */}
+      {/* Main */}
       {isOpen && !paymentSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-lg">
@@ -151,7 +151,7 @@ const handlePayment = async () => {
         </div>
       )}
 
-      {/* מודאל הצלחה */}
+      {/* Success */}
       {paymentSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-8 w-full max-w-md shadow-xl text-center">
