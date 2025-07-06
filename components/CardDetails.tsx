@@ -24,6 +24,7 @@ function CardDetails({isOpen, closeModel, car}: CarDeatailsProps) {
   const [showDateModal, setShowDateModal] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const isOutOfStock = car.inventory === 0;
 
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);

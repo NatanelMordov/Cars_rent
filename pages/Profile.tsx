@@ -144,6 +144,7 @@ const handleRatingClick = async (carId: number, rating: number, cartId: number) 
     });
     if (!res.ok) throw new Error("Rating failed");
     setConfirmMessage("Thanks for rating!");
+    setConfirmOpen(true);
      // auto close after 2 sec
     setTimeout(() => {
       setConfirmOpen(false);
