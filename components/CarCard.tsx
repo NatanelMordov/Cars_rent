@@ -10,7 +10,7 @@ interface CarCardProps{
 }
 
 function CarCard({car}:CarCardProps) {
-  const {fuels, yearsOfProduction, manufacturers, model, gear, priceperday }= car;
+  const {fuels, yearsOfProduction, manufacturers, model, gear, priceperday, averageRating = 0 }= car;
   const [isOpen, setIsOpen] = useState(false);
 const numericRating = Number(car.averageRating ?? 0);
   
