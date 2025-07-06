@@ -8,7 +8,7 @@ import "../app/globals.css";
 interface OrderItem {
   cartId: number;
   username: string;
-  car_id: number;
+  carId: number;
   start_date: string;
   end_date: string;
   totalprice: number;
@@ -143,7 +143,18 @@ const handleRatingClick = async (carId: number, rating: number, cartId: number) 
       body: JSON.stringify({ carId, rating, cartId }),
     });
     if (!res.ok) throw new Error("Rating failed");
-    alert("Thanks for rating!");
+    setConfirmMessage("Thanks for rating!");
+     // auto close after 3 sec
+    setTimeout(() => {
+      setConfirmOpen(false);
+      setConfirmMessage("");
+    }, 2000);
+    setOrders((prevOrders) =>
+    prevOrders.map((order) =>
+    order.cartId === cartId ? { ...order, rating } : order
+  )
+);
+
   } catch (err) {
     console.error("Rating error:", err);
   }
@@ -330,27 +341,29 @@ const handleRatingClick = async (carId: number, rating: number, cartId: number) 
               })
             )}
           </section>
-                    {isConfirmOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
-      <p className="mb-4 text-gray-800">{confirmMessage}</p>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setConfirmOpen(false)}
-          className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={confirmDelete}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          {isConfirmOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+                <p className="mb-4 text-gray-800">{confirmMessage}</p>
+                {cartIdToDelete !== null && ( // show only for delete
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={() => setConfirmOpen(false)}
+                      className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmDelete}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
