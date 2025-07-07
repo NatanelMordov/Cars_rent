@@ -155,6 +155,19 @@ const LoginPopup = ({}) => {
               </p>
             )}
           </form>
+        {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+            <p className="mb-4 text-gray-800">{popupMessage}</p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
         </div>
        )
 }
